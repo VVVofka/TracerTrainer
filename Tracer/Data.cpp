@@ -1,0 +1,44 @@
+#include "stdafx.h"
+#include "Data.h"
+#pragma warning(disable : 26495)
+#ifdef _DEBUG
+#undef THIS_FILE
+static char THIS_FILE[]=__FILE__;
+#define new DEBUG_NEW
+#endif
+#pragma warning(disable : 4996)
+#pragma warning(disable : 6031)
+CData::CData()
+{
+}
+CData::~CData()
+{}////////////////////////////////////////////////////////////////////////////////////////
+int CData::Load(CString fname)
+{	
+	int f,ret;
+	f=_open(fname,_O_BINARY | _O_RDONLY);
+	if(f==-1) return 0;
+	__int64 lenfile = _lseeki64(f, 0, SEEK_END);
+	_lseeki64(f, 0, SEEK_SET);
+	_read(f, &hdr, sizeof(hdr));
+	ret = ((int)lenfile - sizeof(hdr)) / sizeof(RateInfo);
+	vret.Create(ret);
+	_read(f, vret.p, (int)(sizeof(RateInfo)*ret));
+	_close(f);
+	return ret;
+}////////////////////////////////////////////////////////////////////////////////////////
+time_t CData::dt(int n)
+{  return vret.p[n].ctm;
+}////////////////////////////////////////////////////////////////////////////////////////
+double CData::close(int n)
+{ return vret.p[n].close;
+}////////////////////////////////////////////////////////////////////////////////////////
+double CData::open(int n)
+{return vret.p[n].open;
+}////////////////////////////////////////////////////////////////////////////////////////
+double CData::high(int n)
+{return vret.p[n].high;
+}////////////////////////////////////////////////////////////////////////////////////////
+double CData::low(int n)
+{return vret.p[n].low;
+}////////////////////////////////////////////////////////////////////////////////////////
